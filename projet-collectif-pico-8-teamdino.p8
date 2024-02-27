@@ -41,6 +41,8 @@ function _update60()
  end
  update_camera()
  update_trex()
+ --collision()
+
  --player_movement()
  
 -- interact()
@@ -50,7 +52,7 @@ function _draw()
  cls(15)
  draw_map()
  
- print(flr(p.x/8),p.x,p.y)
+-- 
  
 --maman dino
  spr(28,p.x,p.y,2,2)
@@ -59,11 +61,19 @@ function _draw()
 for t in all (trex) do
  spr(35,t.x,t.y,2,2)
  end
+ 
 --coeurs
-for c in all(coeurs) do
- spr(26,c.x,c.y)
+
+	for c in all(coeurs) do
+ 	spr(26,c.x,c.y)
  end
+
+ 
+ 
+debug()
 end
+
+
 -- affichage des grands sprites
 
 
@@ -73,7 +83,7 @@ end
 
 function shoot()
  new_coeur={
-  x=p.x,
+  x=p.x+16,
   y=p.y,
   speed=2
  }
@@ -83,11 +93,24 @@ end
 function update_coeurs()
  for c in all (coeurs) do
   c.x+=c.speed
+  
  end
 end
 
+function debug()
+ for c in all (coeurs) do 
+   print(flr(c.x/8),c.x,c.y,7)
+ end
 
-
+ for t in all (trex) do
+  print (flr(t.x/8),t.x,t.y,7)
+ end
+ 
+--  print(flr(p.x/8),p.x,p.y)
+--print(p.x)
+--print(c.x)
+--print(#coeurs)
+end
 
 
 
@@ -100,19 +123,35 @@ function generer_trex()
   x=940,
   y=175,
   speed=4,
-  life=3
+  life=2
   }
   add (trex,new_trex)
 end
 
 function update_trex()
- for t in all(trex) do
-  t.x-=0.7--vitesse arrivee par la droite
-  if t.x<10 then
-   del (trex,t)
-  end
- end
-end 
+	for t in all(trex) do
+ 	t.x-=0.4--vitesse arrivee par la droite
+	 if t.x<10 then
+		 del(trex,t)
+		end
+ 	for c in all(coeurs) do 
+   if collision(c,t) then
+    del(coeurs,c)
+    t.life-=1
+    if t.life==0 then
+     del(trex,t)
+    -- while t<3 do
+      --generer_trex()
+     --end
+    end 
+   end
+	 end
+	 
+	end
+  --collision
+ 
+	   
+end
 -->8
 --map
 
@@ -132,7 +171,7 @@ function update_camera()
 -- camx=mid(0,p.x,127-63)
 -- camy=mid(0,p.y,63-31)
  if p.x>60 then
-  camx=p.x-60
+  camx=p.x-20
  else
   camx=10 
  end
@@ -169,6 +208,20 @@ end
  --end
 --end
   
+-->8
+--collision
+
+function collision(c,t) 
+  if c.x>t.x+8
+		or c.y>t.y+8
+		or c.x+8<t.x
+		or c.y+8<t.y then
+		 return false
+	 else
+ 		return true
+	 end
+end
+
 __gfx__
 0000000000000000ffffffffff3333fffffffffffffffffffffffffffffffffffffffffffffffffffffff33bfffffffffffffffffff34333fffaafff00000000
 0000000000000000fffffffff333333fffffffffffffffffffffffffffffffffff73ffffffffffffffff33b3fff3f3fff3f3f3f3ffff3434ff9aa9ff00000000
@@ -178,20 +231,20 @@ __gfx__
 0070070000000000ffbbbbfffff44ffff33533ff3333333333fff333f775555ff43f333f44464cc4f3b33fffff3bb33ffff343fff4ff9f4f444ccc4400000000
 0000000000000000ffbffbfffff44fff3533333f4444644444ccc445f5f55555fffff3ff46444cc6f333fffffff3b3ffffff4ffff999ff4f44ccc44400000000
 0000000000000000fffffffffff44ffff33353ff4644446454ccc544fff5fff5fffff4ff44464cc43fffffffffffbfffffff4ffff4ffff4f4cc4444400000000
-4444444400000000ffffffffffffffffffbabbffffffffffffffffccffffffccffffffcc4444444400000000ffffffff00000000000000000000000000000000
-4444444400000000fff444fffffffffffbbbabbffffffffffffffcccfffffcccffffcccc4444444400000000ffffffff00000000000000000000000000000000
-4444444400000000fff444ffffffaffffbbbb31fffffffffffffcccfffffccccffffcccf4444444408808800ffffffff000000000bb000000000000000000000
-4444444406600000ff44444ffffa9afff13b331ffffffffffffcccfffffcccfffffcccff444444448ee8ee80ffffffff00000000bbbbee000000000000000000
-4477444466560000f4444444ffffafffff1111ffffffffffffccccffffcccfffffcccfff444444448eeeee80ffffffff00000000bbbbee000000000bb0000000
-47f7744455666000f4444444fafffffffff22ffffffffffffcccfffffcccfffffcccffff4444444408eee800ffffffff000000000bbbbbbb0000bbbbb0000000
-ff77f7445556660044444444a9afffffff2442ffffffffffcccfffffccccffffccccffff44444444008e8000ffffffff000000000bbbbbbb0000ccbbb0000000
-ffff77745555656044444444fafffffff144442fffffffffccffffffccffffffccffffff4444444400080000ffffffff00000000bbb0000000bbccbbbb000000
-0000000044444444000000000000000000000000ffffffffffffffff66ffffffffffffff00000000000000000000000000000000bbb0000000bbbbbbbb000000
-0070070044444444000000000000000000000000ffffffffff88ffff6668fffffff88fff000000000000000000000000bb0bb0000bb00000000000bbb0000000
-0007700044444444000000000000000000000000ffffff866f8888888668fff88f888fff000000000000000000000000bb0bb0bb0bb00000000000bbb0000000
-0007700044444444000000000000007733000000ffffff86666888888f66f9988668ffff00000000000000000000000000bbbbbbbbb00000000000bbbbb0bb00
-0070070044444444000000000003337333000000fffffff88666fff88f6669966668ffff00000666660000000000000000bbbbbbbbb00000000000bbbbbbbb00
-0000000044444444000000000003333333300000fffffff88f66ff9988f668666888ffff00066656550000000000000000bbbbbbbbb00000000000bbbbbbb000
+4444444400000000ffffffffffffffffffbabbffffffffffffffffccffffffccffffffcc4444444400000000ffffffff0000000000bbb0000000000000000000
+4444444400000000fff444fffffffffffbbbabbffffffffffffffcccfffffcccffffcccc4444444400000000ffffffff000000000bbbe0000000000000000000
+4444444400000000fff444ffffffaffffbbbb31fffffffffffffcccfffffccccffffcccf4444444408808800ffffffff000000000bbbbb000000000000000000
+4444444406600000ff44444ffffa9afff13b331ffffffffffffcccfffffcccfffffcccff444444448ee8ee80ffffffff00000000bbbb00000000000000000000
+4477444466560000f4444444ffffafffff1111ffffffffffffccccffffcccfffffcccfff444444448eeeee80ffffffff00000000bbbb00000000000bb0000000
+47f7744455666000f4444444fafffffffff22ffffffffffffcccfffffcccfffffcccffff4444444408eee800ffffffff0000000bbbbb00000000bbbbb0000000
+ff77f7445556660044444444a9afffffff2442ffffffffffcccfffffccccffffccccffff44444444008e8000ffffffff0000000bbbbb00000000ccbbb0000000
+ffff77745555656044444444fafffffff144442fffffffffccffffffccffffffccffffff4444444400080000ffffffff000000bbbbbb000000bbccbbbb000000
+0000000044444444000000000000000000000000ffffffffffffffff66ffffffffffffff00000000000000000000000000000bbbbbbb000000bbbbbbbb000000
+0070070044444444000000000000000000000000ffffffffff88ffff6668fffffff88fff000000000000000000000000000bbbbbbbbb0000000000bbb0000000
+0007700044444444000000000000000000000000ffffff866f8888888668fff88f888fff0000000000000000000000000bbbbbbbbbbb0000000000bbb0000000
+0007700044444444000000000000007733000000ffffff86666888888f66f9988668ffff000000000000000000000000bbbbbbbbbbbb0000000000bbbbb0bb00
+0070070044444444000000000003337333000000fffffff88666fff88f6669966668ffff00000666660000000000000000bbbbbbbbbb0000000000bbbbbbbb00
+0000000044444444000000000003333333300000fffffff88f66ff9988f668666888ffff00066656550000000000000000bbbbbbbbbb0000000000bbbbbbb000
 0000000044444444000000000008888883300000ffffffffffff669988ff886688ffffff00666666550000000000000000bb00000bb00000000000bb00bbbb00
 0000000044444444000000000000003333300003ffffffffffff668899999fffffffffff66655666666600000000000000bb00000bb00000000000bb0000bb00
 0000000000000000000000000000003333333003ffffffffffff4444999994ffffffffff55555556566500000000000000000000000000000000000000000000
